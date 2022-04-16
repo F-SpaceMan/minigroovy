@@ -237,10 +237,10 @@ public class SyntaticAnalysis {
 
     // <body> ::= <cmd> | '{' <code> '}'
     private void procBody() {
-        if (current.type == TokenType.CURLY_BRACKET_OPEN) {
-            eat(TokenType.CURLY_BRACKET_OPEN);
+        if (current.type == TokenType.BRACE_OPEN) {
+            eat(TokenType.BRACE_OPEN);
             procCode();
-            eat(TokenType.CURLY_BRACKET_CLOSE);
+            eat(TokenType.BRACE_CLOSE);
         } else {
             procCmd();
         }
@@ -394,21 +394,18 @@ public class SyntaticAnalysis {
 
     // <lvalue> ::= <name> { '.' <name> | '[' <expr> ']' }
     private void procLvalue() {
-        procName();
+        eat(TokenType.NAME);
 
         while (current.type == TokenType.DOT || current.type == TokenType.BRACKET_OPEN) {
             if (current.type == TokenType.DOT) {
                 eat(TokenType.DOT);
-                procName();
+                eat(TokenType.NAME);
             } else {
                 eat(TokenType.BRACKET_OPEN);
                 procExpr();
                 eat(TokenType.BRACKET_CLOSE);
             }
         }
-    }
-
-    private void procName() {
     }
 
     // <rvalue> ::= <const> | <function> | <switch> | <struct> | <lvalue>
@@ -435,10 +432,10 @@ public class SyntaticAnalysis {
             eat(TokenType.FALSE);
         } else if (current.type == TokenType.TRUE) {
             eat(TokenType.TRUE);
-        } else if (current.type == TokenType.INTEGER) {
-            eat(TokenType.INTEGER);
-        } else if (current.type == TokenType.STRING) {
-            eat(TokenType.STRING);
+        } else if (current.type == TokenType.NUMBER) {
+            eat(TokenType.NUMBER);
+        } else if (current.type == TokenType.TEXT) {
+            eat(TokenType.TEXT);
         } else {
             showError();
         }
@@ -471,7 +468,7 @@ public class SyntaticAnalysis {
         eat(TokenType.PARENTESIS_OPEN);
         procExpr();
         eat(TokenType.PARENTESIS_CLOSE);
-        eat(TokenType.CURLY_BRACKET_OPEN);
+        eat(TokenType.BRACE_OPEN);
 
         while (current.type == TokenType.CASE) {
             eat(TokenType.CASE);
@@ -486,7 +483,7 @@ public class SyntaticAnalysis {
             procExpr();
         }
 
-        eat(TokenType.CURLY_BRACKET_CLOSE);
+        eat(TokenType.BRACE_CLOSE);
     }
 
     // <struct> ::= '[' [ ':' | <expr> { ',' <expr> } | <name> ':' <expr> { ','
@@ -506,12 +503,12 @@ public class SyntaticAnalysis {
 
         while (current.type == TokenType.COLON) {
             eat(TokenType.COLON);
-            procName();
+            eat(TokenType.NAME);
             eat(TokenType.COLON);
             procExpr();
             while (current.type == TokenType.COMMA) {
                 eat(TokenType.COMMA);
-                procName();
+                eat(TokenType.NAME);
                 eat(TokenType.COLON);
                 procExpr();
             }
