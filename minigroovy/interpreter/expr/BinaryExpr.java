@@ -1,9 +1,13 @@
 package interpreter.expr;
 
 import interpreter.util.Utils;
+import interpreter.value.ArrayValue;
+import interpreter.value.BooleanValue;
+import interpreter.value.MapValue;
 import interpreter.value.NumberValue;
 import interpreter.value.Value;
 
+// TODO: VERIFICAR TODAS IMPLEMENTACOES JA VEITAS
 public class BinaryExpr extends Expr {
 
     public enum Op {
@@ -97,47 +101,192 @@ public class BinaryExpr extends Expr {
     }
 
     private Value<?> andOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if ((!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue)) &&
+                (!(lvalue instanceof BooleanValue) ||
+                        !(rvalue instanceof BooleanValue)))
+            Utils.abort(super.getLine());
+
+        BooleanValue nvl = (BooleanValue) lvalue;
+        boolean lv = nvl.value();
+
+        BooleanValue nvr = (BooleanValue) rvalue;
+        boolean rv = nvr.value();
+
+        BooleanValue res = new BooleanValue(lv & rv);
+        return res;
     }
 
     private Value<?> orOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if ((!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue)) &&
+                (!(lvalue instanceof BooleanValue) ||
+                        !(rvalue instanceof BooleanValue)))
+            Utils.abort(super.getLine());
+
+        BooleanValue nvl = (BooleanValue) lvalue;
+        boolean lv = nvl.value();
+
+        BooleanValue nvr = (BooleanValue) rvalue;
+        boolean rv = nvr.value();
+
+        BooleanValue res = new BooleanValue(lv | rv);
+        return res;
     }
 
     private Value<?> equalOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if (!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue))
+            Utils.abort(super.getLine());
+
+            NumberValue nvl = (NumberValue) lvalue;
+        int lv = nvl.value();
+
+        NumberValue nvr = (NumberValue) rvalue;
+        int rv = nvr.value();
+
+        BooleanValue res = new BooleanValue(lv == rv);
+        return res;
     }
 
     private Value<?> notEqualOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if (!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue))
+            Utils.abort(super.getLine());
+
+            NumberValue nvl = (NumberValue) lvalue;
+        int lv = nvl.value();
+
+        NumberValue nvr = (NumberValue) rvalue;
+        int rv = nvr.value();
+
+        BooleanValue res = new BooleanValue(lv != rv);
+        return res;
     }
 
     private Value<?> lowerThanOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if (!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue))
+            Utils.abort(super.getLine());
+
+            NumberValue nvl = (NumberValue) lvalue;
+        int lv = nvl.value();
+
+        NumberValue nvr = (NumberValue) rvalue;
+        int rv = nvr.value();
+
+        BooleanValue res = new BooleanValue(lv < rv);
+        return res;
     }
 
     private Value<?> lowerEqualOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if (!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue))
+            Utils.abort(super.getLine());
+
+            NumberValue nvl = (NumberValue) lvalue;
+        int lv = nvl.value();
+
+        NumberValue nvr = (NumberValue) rvalue;
+        int rv = nvr.value();
+
+        BooleanValue res = new BooleanValue(lv <= rv);
+        return res;
     }
 
     private Value<?> greaterThanOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if (!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue))
+            Utils.abort(super.getLine());
+
+            NumberValue nvl = (NumberValue) lvalue;
+        int lv = nvl.value();
+
+        NumberValue nvr = (NumberValue) rvalue;
+        int rv = nvr.value();
+
+        BooleanValue res = new BooleanValue(lv > rv);
+        return res;
     }
 
     private Value<?> greaterEqualOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if (!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue))
+            Utils.abort(super.getLine());
+
+            NumberValue nvl = (NumberValue) lvalue;
+        int lv = nvl.value();
+
+        NumberValue nvr = (NumberValue) rvalue;
+        int rv = nvr.value();
+
+        BooleanValue res = new BooleanValue(lv >= rv);
+        return res;
     }
 
     private Value<?> containsOp() {
+        // TODO: Implement me
         return null;
     }
 
     private Value<?> notContainsOp() {
+        // Value<?> lvalue = left.expr();
+        // Value<?> rvalue = right.expr();
+
+        // if ((!(lvalue instanceof ArrayValue) ||
+        //         !(rvalue instanceof ArrayValue)) &&
+        //         (!(lvalue instanceof MapValue) ||
+        //         !(rvalue instanceof MapValue)) 
+        //     )
+        //     Utils.abort(super.getLine());
+
+        // TODO: Implement me
+
+        // return res;
         return null;
     }
 
     private Value<?> addOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if (!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue))
+            Utils.abort(super.getLine());
+
+        NumberValue nvl = (NumberValue) lvalue;
+        int lv = nvl.value();
+
+        NumberValue nvr = (NumberValue) rvalue;
+        int rv = nvr.value();
+        // TODO: Ver casos de concatenacao
+
+        NumberValue res = new NumberValue(lv + rv);
+        return res;
     }
 
     private Value<?> subOp() {
@@ -145,7 +294,7 @@ public class BinaryExpr extends Expr {
         Value<?> rvalue = right.expr();
 
         if (!(lvalue instanceof NumberValue) ||
-            !(rvalue instanceof NumberValue))
+                !(rvalue instanceof NumberValue))
             Utils.abort(super.getLine());
 
         NumberValue nvl = (NumberValue) lvalue;
@@ -159,19 +308,75 @@ public class BinaryExpr extends Expr {
     }
 
     private Value<?> mulOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if (!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue))
+            Utils.abort(super.getLine());
+
+        NumberValue nvl = (NumberValue) lvalue;
+        int lv = nvl.value();
+
+        NumberValue nvr = (NumberValue) rvalue;
+        int rv = nvr.value();
+
+        NumberValue res = new NumberValue(lv * rv);
+        return res;
     }
 
     private Value<?> divOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if (!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue))
+            Utils.abort(super.getLine());
+
+        NumberValue nvl = (NumberValue) lvalue;
+        int lv = nvl.value();
+
+        NumberValue nvr = (NumberValue) rvalue;
+        int rv = nvr.value();
+
+        NumberValue res = new NumberValue(lv / rv);
+        return res;
     }
 
     private Value<?> modOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if (!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue))
+            Utils.abort(super.getLine());
+
+        NumberValue nvl = (NumberValue) lvalue;
+        int lv = nvl.value();
+
+        NumberValue nvr = (NumberValue) rvalue;
+        int rv = nvr.value();
+
+        NumberValue res = new NumberValue(lv % rv);
+        return res;
     }
 
     private Value<?> powerOp() {
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+
+        if (!(lvalue instanceof NumberValue) ||
+                !(rvalue instanceof NumberValue))
+            Utils.abort(super.getLine());
+
+        NumberValue nvl = (NumberValue) lvalue;
+        int lv = nvl.value();
+
+        NumberValue nvr = (NumberValue) rvalue;
+        int rv = nvr.value();
+
+        NumberValue res = new NumberValue((int) Math.pow(lv, rv));
+        return res;
     }
-    
+
 }
