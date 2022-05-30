@@ -39,11 +39,14 @@ public class LexicalAnalysis implements AutoCloseable {
         while (state != 14 && state != 15) {
             int c = getc();
             // System.out.printf(" [%02d, %03d ('%c')]\n",
-            // state, c, (char) c);
+                    // state, c, (char) c);
 
             switch (state) {
                 case 1:
-                    if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+                    if (c == ' ' || c == '\t' || c == '\r') {
+                        state = 1;
+                    } else if (c == '\n') {
+                        line++;
                         state = 1;
                     } else if (c == '/') {
                         lex.token += (char) c;
@@ -66,21 +69,24 @@ public class LexicalAnalysis implements AutoCloseable {
                     } else if (c == '|') {
                         lex.token += (char) c;
                         state = 10;
-                    } else if (c == '_' || c == '$' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+                    } else if (c == '_' || c == '$' || Character.isLetter(c)) {
                         lex.token += (char) c;
                         state = 11;
-                    } else if (c >= '0' && c <= '9') {
+                    } else if (Character.isDigit(c)) {
                         lex.token += (char) c;
                         state = 12;
                     } else if (c == '\'') {
-                        lex.token += (char) c;
                         state = 13;
-                    } else if (c == '.' || c == ',' || c == ';'
-                            || c == ':' || c == '(' || c == ')' || c == '['
-                            || c == ']' || c == '{' || c == '}') {
+                    } else if (c == '.' || c == ',' || c == ';' || c == ':' ||
+                            c == '(' || c == ')' || c == '[' || c == ']' ||
+                            c == '{' || c == '}') {
                         lex.token += (char) c;
                         state = 14;
+                    } else if (c == -1) {
+                        lex.type = TokenType.END_OF_FILE;
+                        state = 15;
                     } else {
+                        lex.token += (char) c;
                         lex.type = TokenType.INVALID_TOKEN;
                         state = 15;
                     }
@@ -118,7 +124,7 @@ public class LexicalAnalysis implements AutoCloseable {
                     } else if (c == '=') {
                         lex.token += (char) c;
                         state = 14;
-                    } else if (c == -1){
+                    } else if (c == -1) {
                         lex.type = TokenType.UNEXPECTED_EOF;
                         state = 15;
                     } else {
@@ -142,9 +148,6 @@ public class LexicalAnalysis implements AutoCloseable {
                     if (c == '=' || c == '>') {
                         lex.token += (char) c;
                         state = 14;
-                    } else if (c == -1){
-                        lex.type = TokenType.UNEXPECTED_EOF;
-                        state = 15;
                     } else {
                         ungetc(c);
                         state = 14;
@@ -155,45 +158,39 @@ public class LexicalAnalysis implements AutoCloseable {
                         lex.token += (char) c;
                         state = 14;
                     } else if (c == 'i') {
-                        lex.token += (char) c;
                         state = 8;
-                    } else if (c == -1){
-                        lex.type = TokenType.UNEXPECTED_EOF;
-                        state = 15;
-                    }  else {
+                    } else {
                         ungetc(c);
                         state = 14;
                     }
+
                     break;
                 case 8:
                     if (c == 'n') {
-                        lex.token += (char) c;
+                        lex.token += "in";
                         state = 14;
-                    } else if (c == -1){
-                        lex.type = TokenType.UNEXPECTED_EOF;
-                        state = 15;
                     } else {
                         ungetc(c);
-                        ungetc(c);
+                        ungetc('i');
                         state = 14;
                     }
+
                     break;
                 case 9:
                     if (c == '&') {
                         lex.token += (char) c;
                         state = 14;
-                    } else if (c == -1){
-                        lex.type = TokenType.UNEXPECTED_EOF;
-                        state = 15;
                     } else {
                         lex.type = TokenType.INVALID_TOKEN;
+                        state = 15;
                     }
+
                     break;
                 case 10:
                     if (c == '|') {
                         lex.token += (char) c;
                         state = 14;
-                    } else if (c == -1){
+                    } else if (c == -1) {
                         lex.type = TokenType.UNEXPECTED_EOF;
                         state = 15;
                     } else {
@@ -201,13 +198,10 @@ public class LexicalAnalysis implements AutoCloseable {
                     }
                     break;
                 case 11:
-                    if (c == '_' || c == '$' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-                            || (c >= '0' && c <= '9')) {
+                    if (c == '$' || c == '_' ||
+                            Character.isLetter(c) || Character.isDigit(c)) {
                         lex.token += (char) c;
                         state = 11;
-                    } else if (c == -1){
-                        lex.type = TokenType.UNEXPECTED_EOF;
-                        state = 15;
                     } else {
                         ungetc(c);
                         state = 14;
@@ -217,24 +211,25 @@ public class LexicalAnalysis implements AutoCloseable {
                     if (Character.isDigit(c)) {
                         lex.token += (char) c;
                         state = 12;
-                    }else if (c == -1){
-                        lex.type = TokenType.UNEXPECTED_EOF;
-                        state = 15;
                     } else {
                         ungetc(c);
                         lex.type = TokenType.NUMBER;
-                        state = 14;
+                        state = 15;
                     }
                     break;
                 case 13:
-                    if (c == '\'') {
+                    if (c != '\'') {
                         lex.token += (char) c;
+                        lex.type = TokenType.TEXT;
+                        state = 13;
+                    } else if (c == '\'') {
+                        // lex.type = TokenType.TEXT;
                         state = 15;
-                    }else if (c == -1){
-                        lex.type = TokenType.UNEXPECTED_EOF;
+                    } else if (c == -1) {
+                        lex.type = TokenType.END_OF_FILE;
                         state = 15;
                     } else {
-                        ungetc(c);
+                        lex.type = TokenType.UNEXPECTED_EOF;
                         state = 15;
                     }
                     break;
@@ -244,6 +239,7 @@ public class LexicalAnalysis implements AutoCloseable {
         }
 
         if (state == 14)
+            // System.out.println("Token: " + lex.token);
             lex.type = st.find(lex.token);
 
         return lex;
