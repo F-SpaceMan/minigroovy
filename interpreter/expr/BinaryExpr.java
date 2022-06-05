@@ -5,6 +5,7 @@ import interpreter.value.ArrayValue;
 import interpreter.value.BooleanValue;
 import interpreter.value.MapValue;
 import interpreter.value.NumberValue;
+import interpreter.value.TextValue;
 import interpreter.value.Value;
 
 // TODO: VERIFICAR TODAS IMPLEMENTACOES JA VEITAS
@@ -46,6 +47,7 @@ public class BinaryExpr extends Expr {
         Value<?> v = null;
         switch (op) {
             case AndOp:
+                System.out.println("adfasdaf");
                 v = andOp();
                 break;
             case OrOp:
@@ -104,20 +106,21 @@ public class BinaryExpr extends Expr {
         Value<?> lvalue = left.expr();
         Value<?> rvalue = right.expr();
 
-        if ((!(lvalue instanceof NumberValue) ||
-                !(rvalue instanceof NumberValue)) &&
-                (!(lvalue instanceof BooleanValue) ||
-                        !(rvalue instanceof BooleanValue)))
+        if ((!(lvalue instanceof NumberValue) || !(rvalue instanceof NumberValue)) &&
+                (!(lvalue instanceof BooleanValue) || !(rvalue instanceof BooleanValue)) &&
+                (!(lvalue instanceof TextValue) || !(rvalue instanceof TextValue)))
             Utils.abort(super.getLine());
 
-        BooleanValue nvl = (BooleanValue) lvalue;
-        boolean lv = nvl.value();
+        if (lvalue instanceof BooleanValue && rvalue instanceof BooleanValue) {
+            BooleanValue nvl = (BooleanValue) lvalue;
+            boolean lv = nvl.value();
 
-        BooleanValue nvr = (BooleanValue) rvalue;
-        boolean rv = nvr.value();
+            BooleanValue nvr = (BooleanValue) rvalue;
+            boolean rv = nvr.value();
 
-        BooleanValue res = new BooleanValue(lv & rv);
-        return res;
+            BooleanValue res = new BooleanValue(lv & rv);
+            return res;
+        }
     }
 
     private Value<?> orOp() {
@@ -148,7 +151,7 @@ public class BinaryExpr extends Expr {
                 !(rvalue instanceof NumberValue))
             Utils.abort(super.getLine());
 
-            NumberValue nvl = (NumberValue) lvalue;
+        NumberValue nvl = (NumberValue) lvalue;
         int lv = nvl.value();
 
         NumberValue nvr = (NumberValue) rvalue;
@@ -166,7 +169,7 @@ public class BinaryExpr extends Expr {
                 !(rvalue instanceof NumberValue))
             Utils.abort(super.getLine());
 
-            NumberValue nvl = (NumberValue) lvalue;
+        NumberValue nvl = (NumberValue) lvalue;
         int lv = nvl.value();
 
         NumberValue nvr = (NumberValue) rvalue;
@@ -184,7 +187,7 @@ public class BinaryExpr extends Expr {
                 !(rvalue instanceof NumberValue))
             Utils.abort(super.getLine());
 
-            NumberValue nvl = (NumberValue) lvalue;
+        NumberValue nvl = (NumberValue) lvalue;
         int lv = nvl.value();
 
         NumberValue nvr = (NumberValue) rvalue;
@@ -202,7 +205,7 @@ public class BinaryExpr extends Expr {
                 !(rvalue instanceof NumberValue))
             Utils.abort(super.getLine());
 
-            NumberValue nvl = (NumberValue) lvalue;
+        NumberValue nvl = (NumberValue) lvalue;
         int lv = nvl.value();
 
         NumberValue nvr = (NumberValue) rvalue;
@@ -220,7 +223,7 @@ public class BinaryExpr extends Expr {
                 !(rvalue instanceof NumberValue))
             Utils.abort(super.getLine());
 
-            NumberValue nvl = (NumberValue) lvalue;
+        NumberValue nvl = (NumberValue) lvalue;
         int lv = nvl.value();
 
         NumberValue nvr = (NumberValue) rvalue;
@@ -238,7 +241,7 @@ public class BinaryExpr extends Expr {
                 !(rvalue instanceof NumberValue))
             Utils.abort(super.getLine());
 
-            NumberValue nvl = (NumberValue) lvalue;
+        NumberValue nvl = (NumberValue) lvalue;
         int lv = nvl.value();
 
         NumberValue nvr = (NumberValue) rvalue;
@@ -258,11 +261,11 @@ public class BinaryExpr extends Expr {
         // Value<?> rvalue = right.expr();
 
         // if ((!(lvalue instanceof ArrayValue) ||
-        //         !(rvalue instanceof ArrayValue)) &&
-        //         (!(lvalue instanceof MapValue) ||
-        //         !(rvalue instanceof MapValue)) 
-        //     )
-        //     Utils.abort(super.getLine());
+        // !(rvalue instanceof ArrayValue)) &&
+        // (!(lvalue instanceof MapValue) ||
+        // !(rvalue instanceof MapValue))
+        // )
+        // Utils.abort(super.getLine());
 
         // TODO: Implement me
 

@@ -107,7 +107,7 @@ public class SyntaticAnalysis {
                 current.type == TokenType.WHILE ||
                 current.type == TokenType.FOR ||
                 current.type == TokenType.FOREACH ||
-                current.type == TokenType.NOT ||
+                current.type == TokenType.NOT || 
                 current.type == TokenType.SUB ||
                 current.type == TokenType.OPEN_PAR ||
                 current.type == TokenType.NULL ||

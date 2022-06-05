@@ -4,4 +4,4 @@ while(n<30){
   println(n)
 }
 
-println(n<30)
+println(true&&false)
