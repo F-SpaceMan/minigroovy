@@ -10,7 +10,6 @@ public class DeclarationType1Command extends DeclarationCommand {
 
     public DeclarationType1Command(int line, Variable lhs, Expr rhs) {
         super(line, rhs);
-
         this.lhs = lhs;
     }
 
@@ -19,5 +18,4 @@ public class DeclarationType1Command extends DeclarationCommand {
         Value<?> v = (rhs != null ? rhs.expr() : null);
         lhs.setValue(v);
     }
-
 }

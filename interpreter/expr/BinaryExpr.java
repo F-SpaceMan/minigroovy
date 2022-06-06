@@ -8,11 +8,10 @@ import interpreter.value.NumberValue;
 import interpreter.value.TextValue;
 import interpreter.value.Value;
 
-// TODO: VERIFICAR TODAS IMPLEMENTACOES JA VEITAS
 public class BinaryExpr extends Expr {
 
     public enum Op {
-        AndOp,
+        AndOp, 
         OrOp,
         EqualOp,
         NotEqualOp,
@@ -47,7 +46,6 @@ public class BinaryExpr extends Expr {
         Value<?> v = null;
         switch (op) {
             case AndOp:
-                System.out.println("adfasdaf");
                 v = andOp();
                 break;
             case OrOp:
@@ -105,20 +103,55 @@ public class BinaryExpr extends Expr {
     private Value<?> andOp() {
         Value<?> lvalue = left.expr();
         Value<?> rvalue = right.expr();
+        BooleanValue lv = null;
+        BooleanValue rv = null;
 
-        if ((!(lvalue instanceof NumberValue) || !(rvalue instanceof NumberValue)) &&
-                (!(lvalue instanceof BooleanValue) || !(rvalue instanceof BooleanValue)) &&
-                (!(lvalue instanceof TextValue) || !(rvalue instanceof TextValue)))
+        if (lvalue instanceof ArrayValue || rvalue instanceof MapValue) {
             Utils.abort(super.getLine());
+            return null;
+        } else {
+            if (lvalue instanceof NumberValue) {
+                if ((Integer) lvalue.value() == 0) {
+                    lv = new BooleanValue(false);
+                } else {
+                    lv = new BooleanValue(true);
+                }
+            } else if (lvalue instanceof TextValue) {
+                if (((String) lvalue.value()).isEmpty()) {
+                    lv = new BooleanValue(false);
+                } else {
+                    lv = new BooleanValue(true);
+                }
+            } else if (lvalue instanceof BooleanValue) {
+                lv = (BooleanValue) lvalue;
+            }
 
-        if (lvalue instanceof BooleanValue && rvalue instanceof BooleanValue) {
-            BooleanValue nvl = (BooleanValue) lvalue;
-            boolean lv = nvl.value();
+            if (rvalue instanceof NumberValue) {
+                if ((Integer) rvalue.value() == 0) {
+                    rv = new BooleanValue(false);
+                } else {
+                    rv = new BooleanValue(true);
+                }
+            } else if (rvalue instanceof TextValue) {
+                if (((String) rvalue.value()).isEmpty()) {
+                    rv = new BooleanValue(false);
+                } else {
+                    rv = new BooleanValue(true);
+                }
+            } else if (rvalue instanceof BooleanValue) {
+                rv = (BooleanValue) rvalue;
+            }
 
-            BooleanValue nvr = (BooleanValue) rvalue;
-            boolean rv = nvr.value();
+            if (lvalue == null) {
+                lv = new BooleanValue(false);
+            }
+            if (rvalue == null) {
+                rv = new BooleanValue(false);
+            }
 
-            BooleanValue res = new BooleanValue(lv & rv);
+            boolean l = (boolean) lv.value();
+            boolean r = (boolean) rv.value();
+            BooleanValue res = new BooleanValue(l && r);
             return res;
         }
     }
@@ -126,56 +159,92 @@ public class BinaryExpr extends Expr {
     private Value<?> orOp() {
         Value<?> lvalue = left.expr();
         Value<?> rvalue = right.expr();
+        BooleanValue lv = null;
+        BooleanValue rv = null;
 
-        if ((!(lvalue instanceof NumberValue) ||
-                !(rvalue instanceof NumberValue)) &&
-                (!(lvalue instanceof BooleanValue) ||
-                        !(rvalue instanceof BooleanValue)))
+        if (lvalue instanceof ArrayValue || rvalue instanceof MapValue) {
             Utils.abort(super.getLine());
+            return null;
+        } else {
+            if (lvalue instanceof NumberValue) {
+                if ((Integer) lvalue.value() == 0) {
+                    lv = new BooleanValue(false);
+                } else {
+                    lv = new BooleanValue(true);
+                }
+            } else if (lvalue instanceof TextValue) {
+                if (((String) lvalue.value()).isEmpty()) {
+                    lv = new BooleanValue(false);
+                } else {
+                    lv = new BooleanValue(true);
+                }
+            } else if (lvalue instanceof BooleanValue) {
+                lv = (BooleanValue) lvalue;
+            }
 
-        BooleanValue nvl = (BooleanValue) lvalue;
-        boolean lv = nvl.value();
+            if (rvalue instanceof NumberValue) {
+                if ((Integer) rvalue.value() == 0) {
+                    rv = new BooleanValue(false);
+                } else {
+                    rv = new BooleanValue(true);
+                }
+            } else if (rvalue instanceof TextValue) {
+                if (((String) rvalue.value()).isEmpty()) {
+                    rv = new BooleanValue(false);
+                } else {
+                    rv = new BooleanValue(true);
+                }
+            } else if (rvalue instanceof BooleanValue) {
+                rv = (BooleanValue) rvalue;
+            }
 
-        BooleanValue nvr = (BooleanValue) rvalue;
-        boolean rv = nvr.value();
+            if (lvalue == null) {
+                lv = new BooleanValue(false);
+            }
+            if (rvalue == null) {
+                rv = new BooleanValue(false);
+            }
 
-        BooleanValue res = new BooleanValue(lv | rv);
-        return res;
+            boolean l = (boolean) lv.value();
+            boolean r = (boolean) rv.value();
+            BooleanValue res = new BooleanValue(l || r);
+            return res;
+        }
     }
 
     private Value<?> equalOp() {
         Value<?> lvalue = left.expr();
         Value<?> rvalue = right.expr();
+        BooleanValue res = null;
 
-        if (!(lvalue instanceof NumberValue) ||
-                !(rvalue instanceof NumberValue))
-            Utils.abort(super.getLine());
+        if (lvalue == null && rvalue == null) {
+            res = new BooleanValue(true);
+        } else if (lvalue == null) {
+            res = new BooleanValue(rvalue.value().equals(null));
+        } else if (rvalue == null) {
+            res = new BooleanValue(lvalue.value().equals(null));
+        } else {
+            res = new BooleanValue(lvalue.value().equals(rvalue.value()));
+        }
 
-        NumberValue nvl = (NumberValue) lvalue;
-        int lv = nvl.value();
-
-        NumberValue nvr = (NumberValue) rvalue;
-        int rv = nvr.value();
-
-        BooleanValue res = new BooleanValue(lv == rv);
         return res;
     }
 
     private Value<?> notEqualOp() {
         Value<?> lvalue = left.expr();
         Value<?> rvalue = right.expr();
+        BooleanValue res = null;
 
-        if (!(lvalue instanceof NumberValue) ||
-                !(rvalue instanceof NumberValue))
-            Utils.abort(super.getLine());
+        if (lvalue == null && rvalue == null) {
+            res = new BooleanValue(false);
+        } else if (lvalue == null) {
+            res = new BooleanValue(!(rvalue.value().equals(null)));
+        } else if (rvalue == null) {
+            res = new BooleanValue(!(lvalue.value().equals(null)));
+        } else {
+            res = new BooleanValue(!(lvalue.value().equals(rvalue.value())));
+        }
 
-        NumberValue nvl = (NumberValue) lvalue;
-        int lv = nvl.value();
-
-        NumberValue nvr = (NumberValue) rvalue;
-        int rv = nvr.value();
-
-        BooleanValue res = new BooleanValue(lv != rv);
         return res;
     }
 
@@ -252,8 +321,37 @@ public class BinaryExpr extends Expr {
     }
 
     private Value<?> containsOp() {
-        // TODO: Implement me
-        return null;
+        Value<?> lvalue = left.expr();
+        Value<?> rvalue = right.expr();
+        BooleanValue res = null;
+
+        System.out.println("lvalue: " + lvalue);
+        System.out.println("rvalue: " + rvalue);
+        // TODO FAZER RVALUE CHEGAR
+
+        if (!(rvalue instanceof TextValue) || !(rvalue instanceof ArrayValue) || !(rvalue instanceof MapValue)) {
+            Utils.abort(super.getLine());
+            return null;
+        } else if (rvalue instanceof TextValue) {
+            TextValue rightString = (TextValue) rvalue;
+
+            res = new BooleanValue(lvalue.value().equals(rightString.value()));
+            return res;
+        } else {
+            if (lvalue.value().toString().contains(rvalue.value().toString())) {
+                res = new BooleanValue(true);
+            } else {
+                res = new BooleanValue(false);
+            }
+
+            // if (lvalue == null) {
+            // lv = new BooleanValue(false);
+            // }
+            // if (rvalue == null) {
+            // rv = new BooleanValue(false);
+            // }
+            return res;
+        }
     }
 
     private Value<?> notContainsOp() {
@@ -277,19 +375,21 @@ public class BinaryExpr extends Expr {
         Value<?> lvalue = left.expr();
         Value<?> rvalue = right.expr();
 
-        if (!(lvalue instanceof NumberValue) ||
-                !(rvalue instanceof NumberValue))
+        if (lvalue instanceof NumberValue && rvalue instanceof NumberValue) {
+            NumberValue nvl = (NumberValue) lvalue;
+            int lv = nvl.value();
+
+            NumberValue nvr = (NumberValue) rvalue;
+            int rv = nvr.value();
+
+            NumberValue res = new NumberValue(lv + rv);
+            return res;
+        } else if (lvalue == null || rvalue == null) {
             Utils.abort(super.getLine());
-
-        NumberValue nvl = (NumberValue) lvalue;
-        int lv = nvl.value();
-
-        NumberValue nvr = (NumberValue) rvalue;
-        int rv = nvr.value();
-        // TODO: Ver casos de concatenacao
-
-        NumberValue res = new NumberValue(lv + rv);
-        return res;
+            return null;
+        } else {
+            return new TextValue(lvalue.value().toString() + rvalue.value().toString());
+        }
     }
 
     private Value<?> subOp() {

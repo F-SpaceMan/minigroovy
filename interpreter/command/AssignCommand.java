@@ -68,24 +68,52 @@ public class AssignCommand extends Command {
         NumberValue rvalue = (NumberValue) rhs.expr();
         Integer i = rvalue.value();
         NumberValue lvalue = (NumberValue) lhs.expr();
-
         Integer j = lvalue.value();
         lhs.setValue(new NumberValue(j + i));
     }
 
     private void subOp() {
+        NumberValue rvalue = (NumberValue) rhs.expr();
+        NumberValue lvalue = (NumberValue) lhs.expr();
+        Integer i = rvalue.value();
+        Integer j = lvalue.value();
+
+        lhs.setValue(new NumberValue(j - i));
     }
 
     private void mulOp() {
+        NumberValue rvalue = (NumberValue) rhs.expr();
+        NumberValue lvalue = (NumberValue) lhs.expr();
+        Integer i = rvalue.value();
+        Integer j = lvalue.value();
+
+        lhs.setValue(new NumberValue(j * i));
     }
 
     private void divOp() {
+        NumberValue rvalue = (NumberValue) rhs.expr();
+        NumberValue lvalue = (NumberValue) lhs.expr();
+        Integer i = rvalue.value();
+        Integer j = lvalue.value();
+            
+        lhs.setValue(new NumberValue(j / i));
     }
 
     private void modOp() {
+        NumberValue rvalue = (NumberValue) rhs.expr();
+        NumberValue lvalue = (NumberValue) lhs.expr();
+        Integer i = rvalue.value();
+        Integer j = lvalue.value();
+            
+        lhs.setValue(new NumberValue(j % i));
     }
 
     private void powerOp() {
+        NumberValue rvalue = (NumberValue) rhs.expr();
+        NumberValue lvalue = (NumberValue) lhs.expr();
+        Integer i = rvalue.value();
+        Integer j = lvalue.value();
+            
+        lhs.setValue(new NumberValue((int) Math.pow(j, i)));
     }
-
 }

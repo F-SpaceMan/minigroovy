@@ -1,9 +1,12 @@
 package interpreter.expr;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import interpreter.util.Utils;
+import interpreter.value.ArrayValue;
 import interpreter.value.BooleanValue;
+import interpreter.value.MapValue;
 import interpreter.value.NumberValue;
 import interpreter.value.TextValue;
 import interpreter.value.Value;
@@ -19,6 +22,7 @@ public class UnaryExpr extends Expr {
         KeysOp,
         ValuesOp;
     }
+
     private static Scanner input = new Scanner(System.in);
 
     private Expr expr;
@@ -26,7 +30,7 @@ public class UnaryExpr extends Expr {
 
     public UnaryExpr(int line, Expr expr, Op op) {
         super(line);
-        
+
         this.expr = expr;
         this.op = op;
     }
@@ -92,7 +96,17 @@ public class UnaryExpr extends Expr {
     }
 
     private Value<?> emptyOp() {
-        return null;
+        Value<?> v = expr.expr();
+        if (v == null || !(v instanceof TextValue) || !(v instanceof ArrayValue)|| !(v instanceof MapValue)) {
+            Utils.abort(super.getLine());
+            return null;
+        } else if (v instanceof TextValue) {
+            return new BooleanValue(v.value().equals(""));
+        } else if (v instanceof ArrayValue ) {
+            return new BooleanValue(((ArrayValue) v).value().isEmpty());
+        } else {
+            return new BooleanValue(((MapValue) v).value().isEmpty());
+        }
     }
 
     private Value<?> sizeOp() {
@@ -104,6 +118,21 @@ public class UnaryExpr extends Expr {
     }
 
     private Value<?> valuesOp() {
+        Value<?> value = expr.expr();
+        if(value instanceof MapValue){
+            MapValue map = (MapValue) value;
+            ArrayList<Value<?>> values = new ArrayList<Value<?>>();
+            for(Value<?> valor : map.value().values()){
+                values.add(valor);
+            }
+        }
+        else if(value == null){
+            Utils.abort(super.getLine());
+            return null;
+        }
+        else{
+            Utils.abort(super.getLine());
+        }
         return null;
     }
 

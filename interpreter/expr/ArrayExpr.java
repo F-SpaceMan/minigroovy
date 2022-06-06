@@ -1,7 +1,8 @@
 package interpreter.expr;
 
+import java.util.ArrayList;
 import java.util.List;
-
+import interpreter.value.ArrayValue;
 import interpreter.value.Value;
 
 public class ArrayExpr extends Expr {
@@ -15,8 +16,11 @@ public class ArrayExpr extends Expr {
 
     @Override
     public Value<?> expr() {
-        System.out.println("ArrayExpr.expr()");
-        return null;
+        List<Value<?>> values = new ArrayList<Value<?>>();
+        for (Expr expression : array) {
+            values.add(expression.expr());
+        }
+        ArrayValue newArray = new ArrayValue(values);
+        return newArray;
     }
-    
 }

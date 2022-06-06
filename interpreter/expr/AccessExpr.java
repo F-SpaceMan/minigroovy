@@ -17,6 +17,7 @@ public class AccessExpr extends SetExpr {
     @Override
     public Value<?> expr() {
         // Value<?> v = Memory.read(base.toString());
+
         Value<?> v = base.expr();
         return v;
     }

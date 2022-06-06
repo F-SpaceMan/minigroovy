@@ -14,6 +14,7 @@ public class IfCommand extends Command {
         this.thenCmds = thenCmds;
     }
 
+    // ALTERNATIVE_VERSION
     // public IfCommand(int line, Expr expr, Command thenCmds, Command elseCmds) {
     //     super(line);
     //     this.expr = expr;

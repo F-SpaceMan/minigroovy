@@ -30,5 +30,14 @@ public class MapExpr extends Expr {
         System.out.println("MapExpr.expr()");
         return null;
     }
+//     public Value<?> expr() {
+//         List<Value<?>> values = new ArrayList<Value<?>>();
+//         for (Expr expression : array) {
+//             values.add(expression.expr());
+//         }
+//         ArrayValue newArray = new ArrayValue(values);
+//         return newArray;
+//     }
+// }
     
 }

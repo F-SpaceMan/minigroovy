@@ -1,7 +1,7 @@
+a = ['a':1, 'b':2]
 def n = 0
-while(n<30){
+println(a)
+while(n<1){
   n += 1
-  println(n)
+  println(a[n])
 }
-
-println(true&&false)
