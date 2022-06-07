@@ -1,5 +1,7 @@
 package interpreter.expr;
 
+import java.util.Arrays;
+
 import interpreter.util.Utils;
 import interpreter.value.ArrayValue;
 import interpreter.value.BooleanValue;
@@ -11,7 +13,7 @@ import interpreter.value.Value;
 public class BinaryExpr extends Expr {
 
     public enum Op {
-        AndOp, 
+        AndOp,
         OrOp,
         EqualOp,
         NotEqualOp,
@@ -324,51 +326,27 @@ public class BinaryExpr extends Expr {
         Value<?> lvalue = left.expr();
         Value<?> rvalue = right.expr();
         BooleanValue res = null;
-
-        System.out.println("lvalue: " + lvalue);
-        System.out.println("rvalue: " + rvalue);
-        // TODO FAZER RVALUE CHEGAR
-
         if (!(rvalue instanceof TextValue) || !(rvalue instanceof ArrayValue) || !(rvalue instanceof MapValue)) {
             Utils.abort(super.getLine());
             return null;
         } else if (rvalue instanceof TextValue) {
             TextValue rightString = (TextValue) rvalue;
-
             res = new BooleanValue(lvalue.value().equals(rightString.value()));
             return res;
-        } else {
-            if (lvalue.value().toString().contains(rvalue.value().toString())) {
-                res = new BooleanValue(true);
-            } else {
-                res = new BooleanValue(false);
-            }
-
-            // if (lvalue == null) {
-            // lv = new BooleanValue(false);
-            // }
-            // if (rvalue == null) {
-            // rv = new BooleanValue(false);
-            // }
+        } else if (rvalue instanceof ArrayValue) {
+            ArrayValue array = (ArrayValue) rvalue;
+            res = new BooleanValue(Arrays.asList(array).contains(lvalue));
+            return res;
+        } else if (rvalue instanceof MapValue) {
+            MapValue array = (MapValue) rvalue;
+            res = new BooleanValue(Arrays.asList(array).contains(lvalue));
             return res;
         }
+        return res;
     }
 
     private Value<?> notContainsOp() {
-        // Value<?> lvalue = left.expr();
-        // Value<?> rvalue = right.expr();
-
-        // if ((!(lvalue instanceof ArrayValue) ||
-        // !(rvalue instanceof ArrayValue)) &&
-        // (!(lvalue instanceof MapValue) ||
-        // !(rvalue instanceof MapValue))
-        // )
-        // Utils.abort(super.getLine());
-
-        // TODO: Implement me
-
-        // return res;
-        return null;
+        return new BooleanValue(!containsOp().eval());
     }
 
     private Value<?> addOp() {

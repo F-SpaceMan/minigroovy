@@ -1,6 +1,11 @@
 package interpreter.expr;
 
 import interpreter.util.Memory;
+import interpreter.util.Utils;
+import interpreter.value.ArrayValue;
+import interpreter.value.MapValue;
+import interpreter.value.NumberValue;
+import interpreter.value.TextValue;
 import interpreter.value.Value;
 
 public class AccessExpr extends SetExpr {
@@ -16,15 +21,30 @@ public class AccessExpr extends SetExpr {
 
     @Override
     public Value<?> expr() {
-        // Value<?> v = Memory.read(base.toString());
+        if (base.expr() instanceof MapValue) {
+            String value = ((TextValue) base.expr()).value();
+            MapValue map = (MapValue) index.expr();
 
-        Value<?> v = base.expr();
-        return v;
+            if (!map.value().containsKey(value)) {
+                return null;
+            } else
+                return map.value().get(value);
+        } else if (base.expr() instanceof ArrayValue) {
+            int iterator = ((NumberValue) index.expr()).value();
+            ArrayValue array = (ArrayValue) base.expr();
+            if (0 > iterator || iterator >= array.value().size())
+                return null;
+            else
+                return array.value().get(iterator);
+        } else {
+            Utils.abort(super.getLine());
+            return null;
+        }
     }
 
     @Override
     public void setValue(Value<?> value) {
         Memory.write(index.toString(), value);
     }
-    
+
 }

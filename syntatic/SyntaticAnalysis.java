@@ -11,19 +11,21 @@ import interpreter.command.DeclarationCommand;
 import interpreter.command.DeclarationType1Command;
 import interpreter.command.DeclarationType2Command;
 import interpreter.command.ForCommand;
+import interpreter.command.ForeachCommand;
 import interpreter.command.IfCommand;
 import interpreter.command.PrintCommand;
 import interpreter.command.WhileCommand;
+import interpreter.expr.AccessExpr;
 import interpreter.expr.ArrayExpr;
 import interpreter.expr.BinaryExpr;
 import interpreter.expr.CastExpr;
 import interpreter.expr.ConstExpr;
 import interpreter.expr.Expr;
 import interpreter.expr.MapExpr;
+import interpreter.expr.MapItem;
 import interpreter.expr.SetExpr;
 import interpreter.expr.UnaryExpr;
 import interpreter.expr.Variable;
-import interpreter.expr.MapExpr.MapItem;
 import interpreter.util.Utils;
 import interpreter.value.BooleanValue;
 import interpreter.value.NumberValue;
@@ -351,7 +353,20 @@ public class SyntaticAnalysis {
     }
 
     // <foreach> ::= foreach '(' [ def ] <name> in <expr> ')' <body>
-    private void procForeach() {
+    private ForeachCommand procForeach() {
+        int line = lex.getLine();
+        eat(TokenType.FOREACH);
+        eat(TokenType.OPEN_PAR);
+        if (current.type == TokenType.DEF) {
+            advance();
+        }
+        Variable var = procName();
+        eat(TokenType.CONTAINS);
+        Expr expr = procExpr();
+        eat(TokenType.CLOSE_PAR);
+        Command comando = procBody();
+        ForeachCommand fec = new ForeachCommand(line, var, expr, comando);
+        return fec;
     }
 
     // <body> ::= <cmd> | '{' <code> '}'
@@ -630,21 +645,30 @@ public class SyntaticAnalysis {
     }
 
     // <lvalue> ::= <name> { '.' <name> | '[' <expr> ']' }
-    private Variable procLValue() {
+    private Expr procLValue() {
         Variable var = procName();
+        Expr base = var;
+        int line = lex.getLine();
+        Expr index = null;
+        AccessExpr accessExpr = null;
 
         while (current.type == TokenType.DOT ||
                 current.type == TokenType.OPEN_BRA) {
             if (current.type == TokenType.DOT) {
                 advance();
-                var = procName();
+                index = (Expr) procName();
             } else {
                 eat(TokenType.OPEN_BRA);
-                procExpr();
+                index = (Expr) procName();
                 eat(TokenType.CLOSE_BRA);
             }
+            accessExpr = new AccessExpr(line, base, index);
+            base = accessExpr;
         }
-        return var;
+        if (accessExpr == null) {
+            return var;
+        }
+        return accessExpr;
     }
 
     // <rvalue> ::= <const> | <function> | <switch> | <struct> | <lvalue>
@@ -678,7 +702,7 @@ public class SyntaticAnalysis {
                 expr = procStruct();
                 break;
             case NAME:
-                Variable var = procLValue();
+                Expr var = procLValue();
                 expr = var;
                 break;
             default:
@@ -774,7 +798,6 @@ public class SyntaticAnalysis {
     private Expr procStruct() {
         ArrayList<MapItem> map = new ArrayList<>();
         ArrayList<Expr> list = new ArrayList<>();
-        MapExpr mapExpr = new MapExpr(lex.getLine(), map);
         MapItem item = null;
         TextValue name = null;
         Expr expr = null;
@@ -787,16 +810,13 @@ public class SyntaticAnalysis {
         } else {
             Lexeme prev = current;
             advance();
-
-            System.out.println("prev: " + prev.type);
-            System.out.println("current: " + current.type);
             if (prev.type == TokenType.TEXT && current.type == TokenType.COLON) {
                 rollback();
 
                 name = procText();
                 eat(TokenType.COLON);
                 expr = procExpr();
-                item = mapExpr.new MapItem((String) name.value(), expr);
+                item = new MapItem((String) name.value(), expr);
                 map.add(item);
 
                 while (current.type == TokenType.COMMA) {
@@ -804,7 +824,7 @@ public class SyntaticAnalysis {
                     name = procText();
                     eat(TokenType.COLON);
                     expr = procExpr();
-                    item = mapExpr.new MapItem((String) name.value(), expr);
+                    item = new MapItem((String) name.value(), expr);
                     map.add(item);
                 }
             } else {

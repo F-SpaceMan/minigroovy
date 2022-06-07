@@ -1,7 +1,9 @@
-a = ['a':1, 'b':2]
-def n = 0
+def a = ['a', 2, 'd', '4']
+def b = 'Abacate'
+def n = 10
 println(a)
-while(n<1){
-  n += 1
+while(n>=5){
   println(a[n])
+  println(n)
+  n -= 2
 }

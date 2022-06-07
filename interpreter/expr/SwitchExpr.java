@@ -1,23 +1,12 @@
 package interpreter.expr;
 
 import java.util.List;
-
 import interpreter.value.Value;
+import java.util.ArrayList;
 
 public class SwitchExpr extends Expr {
-
-    public class CaseItem {
-        private Expr key;
-        private Expr value;
-
-        public CaseItem(Expr key, Expr value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
     private Expr expr;
-    private List<CaseItem> cases;
+    private List<CaseItem> cases = new ArrayList();
     private Expr default_;
 
     public SwitchExpr(int line, Expr expr) {
@@ -35,7 +24,15 @@ public class SwitchExpr extends Expr {
 
     @Override
     public Value<?> expr() {
-        // TODO Auto-generated method stub
+        Value<?> value = expr.expr();
+        for(CaseItem item : cases){
+            if(item.key.expr().equals(value)){
+                return item.value.expr();
+            }
+        }
+        if (default_ != null){
+            return default_.expr();
+        }
         return null;
     }
 }

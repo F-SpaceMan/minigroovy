@@ -1,21 +1,15 @@
 package interpreter.expr;
 
+import interpreter.value.MapValue;
 import java.util.List;
 
 import interpreter.value.Value;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MapExpr extends Expr {
-    
-    public class MapItem {
-        private String key;
-        private Expr value;
-        public MapItem (String key, Expr value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    private List<MapItem> array;
+    private List<MapItem> array = new ArrayList<>();
 
     public MapExpr(int line, List<MapItem> array) {
         super(line);
@@ -23,21 +17,17 @@ public class MapExpr extends Expr {
     }
 
     public void addItem(MapItem item) {
+        array.add(item);
     } 
 
     @Override
     public Value<?> expr() {
-        System.out.println("MapExpr.expr()");
-        return null;
+        Map<String, Value<?>> map = new HashMap<>();
+        for(MapItem item : array){
+            map.put(item.key, item.value.expr());
+        }
+        MapValue mapValue = new MapValue(map);
+        return mapValue;
     }
-//     public Value<?> expr() {
-//         List<Value<?>> values = new ArrayList<Value<?>>();
-//         for (Expr expression : array) {
-//             values.add(expression.expr());
-//         }
-//         ArrayValue newArray = new ArrayValue(values);
-//         return newArray;
-//     }
-// }
     
 }
